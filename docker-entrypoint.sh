@@ -7,8 +7,8 @@ if [ -n "${DATABASE_URL:-}" ]; then
   db="$DATABASE_URL"
   case "$db" in
     *sslmode=*) ;;
-    *\?*) db="${db}&sslmode=require" ;;
-    *)    db="${db}?sslmode=require" ;;
+    *\?*) db="${db}&sslmode=prefer" ;;
+    *)    db="${db}?sslmode=prefer" ;;
   esac
   DATABASE_URL="$db"
   export DATABASE_URL

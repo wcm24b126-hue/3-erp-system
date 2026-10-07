@@ -1,5 +1,7 @@
 FROM node:20-bookworm-slim AS base
-RUN npm install -g pnpm@12
+RUN apt-get update && apt-get install -y --no-install-recommends openssl \
+    && rm -rf /var/lib/apt/lists/* \
+    && npm install -g pnpm@12
 
 FROM base AS deps
 WORKDIR /app
