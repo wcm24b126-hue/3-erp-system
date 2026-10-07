@@ -59,7 +59,7 @@ RANDOM_ID=$((RANDOM % 9000 + 1000))
 TEST_EMAIL="testuser_${RANDOM_ID}@erp.local"
 TEST_PASS="P@ssword_${RANDOM_ID}"
 
-REG_RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X POST "$BASE_URL/register" \
+REG_RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X POST "${BASE_URL}/api/register" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d "{\"email\":\"$TEST_EMAIL\",\"password\":\"$TEST_PASS\",\"name\":\"Test User\"}")
@@ -77,7 +77,7 @@ fi
 # TEST 5: Duplicate Registration Check (Unique Constraint)
 # ------------------------------------------------------------------
 echo -e "\n--- Test 5: Duplicate Email Rejection ---"
-DUP_RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X POST "$BASE_URL/register" \
+DUP_RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X POST "${BASE_URL}/api/register" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d "{\"email\":\"$TEST_EMAIL\",\"password\":\"$TEST_PASS\",\"name\":\"Duplicate User\"}")
