@@ -29,4 +29,6 @@ else
 fi
 
 echo "==> Starting Next.js server on port ${PORT:-3000}"
+HOSTNAME=0.0.0.0
+export HOSTNAME
 exec node server.js
