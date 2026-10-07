@@ -1,9 +1,9 @@
 FROM node:18-alpine AS base
-RUN npm install -g pnpm
+RUN npm install -g pnpm@12
 
 FROM base AS deps
 WORKDIR /app
-COPY package.json pnpm-lock.yaml* ./
+COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml ./
 COPY prisma ./prisma/
 RUN pnpm install --frozen-lockfile || pnpm install
 

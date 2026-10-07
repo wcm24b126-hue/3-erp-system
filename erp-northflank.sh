@@ -109,7 +109,7 @@ ensure_app() {
   step "Tier 2: app service (erp-app, private Next.js)"
   ensure "service erp-app" "/projects/$PROJECT/services/erp-app" "/projects/$PROJECT/services/combined" "$(jq -n \
     --arg repo "$GIT_REPO" --arg branch "$GIT_BRANCH" --arg plan "$PLAN" --argjson port "$APP_PORT" \
-    '{name:"erp-app", description:"ERP App Tier (Next.js 14 + Prisma + NextAuth)",
+    '{name:"erp-app", description:"ERP App Tier (Next.js 14, Prisma, NextAuth)",
       billing:{deploymentPlan:$plan},
       deployment:{instances:2},
       vcsData:{projectUrl:$repo, projectBranch:$branch, projectType:"github"},
@@ -121,16 +121,16 @@ configure_app() {
   step "App config: private port + health checks"
   local body
   body=$(jq -n --argjson port "$APP_PORT" \
-    '{description:"ERP App Tier (Next.js 14 + Prisma + NextAuth)",
+    '{description:"ERP App Tier (Next.js 14, Prisma, NextAuth)",
       ports:[{name:"http", internalPort:$port, public:false, vpcAccessible:false, protocol:"HTTP",
               security:{credentials:[], policies:[], sso:{}}}],
       healthChecks:[
         {protocol:"HTTP", type:"startupProbe", path:"/api/health", port:$port,
-         initialDelaySeconds:5, periodSeconds:5, timeoutSeconds:5, failureThreshold:60, successThreshold:1},
+         initialDelaySeconds:5, periodSeconds:10, timeoutSeconds:5, failureThreshold:30},
         {protocol:"HTTP", type:"readinessProbe", path:"/api/health", port:$port,
-         initialDelaySeconds:0, periodSeconds:10, timeoutSeconds:5, failureThreshold:3, successThreshold:1},
+         initialDelaySeconds:1, periodSeconds:10, timeoutSeconds:5, failureThreshold:3, successThreshold:1},
         {protocol:"HTTP", type:"livenessProbe", path:"/api/health", port:$port,
-         initialDelaySeconds:15, periodSeconds:20, timeoutSeconds:5, failureThreshold:3, successThreshold:1}
+         initialDelaySeconds:15, periodSeconds:20, timeoutSeconds:5, failureThreshold:3}
       ]}')
   call PATCH "/projects/$PROJECT/services/combined/erp-app" "$body" >/dev/null
   echo "    erp-app configured"
@@ -166,9 +166,9 @@ configure_web() {
       runtimeFiles:{"/etc/nginx/conf.d/default.conf":{data:$b64, encoding:"utf-8"}},
       healthChecks:[
         {protocol:"HTTP", type:"startupProbe", path:"/api/health", port:$port,
-         initialDelaySeconds:5, periodSeconds:10, timeoutSeconds:5, failureThreshold:18, successThreshold:1},
+         initialDelaySeconds:5, periodSeconds:10, timeoutSeconds:5, failureThreshold:18},
         {protocol:"HTTP", type:"readinessProbe", path:"/api/health", port:$port,
-         initialDelaySeconds:0, periodSeconds:10, timeoutSeconds:5, failureThreshold:3, successThreshold:1}
+         initialDelaySeconds:1, periodSeconds:10, timeoutSeconds:5, failureThreshold:3, successThreshold:1}
       ]}')
   call PATCH "/projects/$PROJECT/services/deployment/erp-web" "$body" >/dev/null
   echo "    erp-web configured (nginx conf mounted, IP allowlist cleared)"
