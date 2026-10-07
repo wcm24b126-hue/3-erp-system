@@ -1,4 +1,4 @@
-FROM node:18-alpine AS base
+FROM node:20-bookworm-slim AS base
 RUN npm install -g pnpm@12
 
 FROM base AS deps

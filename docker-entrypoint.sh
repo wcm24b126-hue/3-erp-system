@@ -16,7 +16,7 @@ if [ -n "${DATABASE_URL:-}" ]; then
   echo "==> Syncing database schema (prisma db push)"
   i=1
   until $PRISMA db push --skip-generate --accept-data-loss; do
-    if [ "$i" -ge 5 ]; then
+    if [ "$i" -ge 20 ]; then
       echo "ERROR: prisma db push failed after $i attempts" >&2
       exit 1
     fi
